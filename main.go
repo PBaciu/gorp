@@ -7,19 +7,32 @@ import (
   "slices"
 )
 
+// TODO consider using set instead of slices
 var registry = make(map[uint16][]string)
 
 func main()  {
-  registerHost(5001, "https://google.com")
-  registerHost(5001, "https://cnn.com")
-  
+  initializeRegistry()
+
   go http.ListenAndServe(":5001", http.HandlerFunc(requestHandler))
   http.ListenAndServe(":5002", http.HandlerFunc(requestHandler))
 }
 
+func initializeRegistry() {
+  registerHost(5001, "https://google.com")
+  registerHost(5001, "https://cnn.com")
+  registerHost(5002, "https://google.com")
+  registerHost(5002, "https://bloomberg.com")
+}
+
 func requestHandler(w http.ResponseWriter, req *http.Request) {
   port := identifyPort(req)
-  fmt.Printf("Hello From Port %d\n", port)
+
+  // TODO add some logic to forward a request to a host given host availability
+  candidateHosts := registry[port]
+  if len(candidateHosts) == 0 {
+    fmt.Println("ERROR: no candidate hosts for port")
+  }
+  fmt.Printf("Candidates for port %d: %v\n", port, candidateHosts)
 }
 
 // Identifies the port of the incoming request
