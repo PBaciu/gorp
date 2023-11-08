@@ -13,23 +13,16 @@ func main()  {
   registerHost(5001, "https://google.com")
   registerHost(5001, "https://cnn.com")
   
-  go http.ListenAndServe(":5001", http.HandlerFunc(fiveThousandHandler))
-  http.ListenAndServe(":5002", http.HandlerFunc(fiveThousandHandler))
+  go http.ListenAndServe(":5001", http.HandlerFunc(requestHandler))
+  http.ListenAndServe(":5002", http.HandlerFunc(requestHandler))
 }
 
-func fiveThousandHandler(w http.ResponseWriter, req *http.Request) {
+func requestHandler(w http.ResponseWriter, req *http.Request) {
   port := identifyPort(req)
   fmt.Printf("Hello From Port %d\n", port)
 }
 
-func sixThousandHandler() {
-
-}
-
-func sevenThousandHandler() {
-
-}
-
+// Identifies the port of the incoming request
 func identifyPort(req *http.Request) uint16 {
   context := req.Context()
  
